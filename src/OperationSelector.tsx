@@ -18,7 +18,7 @@ const OperationSelector: React.FC<OperationSelectorProps> = ({operations, onSele
     <div>
       <label>Select Operation: </label>
       <select value={selectedOperation} onChange={handleOperationChange}>
-        {operations.map(v => <option value= {v}  >{v}</option>  )}
+        {operations.map((v, i) => <option value= {v} key={i} >{v}</option>  )}
       </select>
     </div>
   );

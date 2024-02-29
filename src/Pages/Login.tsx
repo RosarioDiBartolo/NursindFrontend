@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select"
 import { useRef , useState} from 'react';
  
+import { backend } from '@/config';
+
 export function Login() {
   const [State, setState] = useState("Immetti le tue credenziali per aver accesso alla piattaforma.")
   const emailRef = useRef<HTMLInputElement>(null)
@@ -33,7 +35,7 @@ export function Login() {
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
 
-    const response = await fetch("/api/login",  {method: "POST", headers: {
+    const response = await backend.fetch("/login",  {method: "POST", headers: {
       'Content-Type': 'application/json',
   },     body: JSON.stringify({ email, password  })});
 

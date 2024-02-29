@@ -8,6 +8,7 @@ import { saveAs } from 'file-saver';
 
 import { Operations } from '../Global'
 import OperationSelector from '../OperationSelector'
+import { backend } from '@/config';
 
 interface HomeProps{
 
@@ -27,7 +28,7 @@ function Home( {} : HomeProps) {
         }
   
         // Make a POST request using fetch
-        const response = await fetch('api/analyze', {
+        const response = await backend.fetch('api/analyze', {
           method: 'POST',
           body: formData,
           mode: "cors", // no-cors, *cors, same-origin
@@ -59,7 +60,7 @@ function Home( {} : HomeProps) {
     }, [])
   return (
 <>
-      <div>
+      <div className='flex flex-row justify-content-between'>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
