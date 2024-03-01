@@ -2,14 +2,16 @@ import reactLogo from '../assets/react.svg'
 import viteLogo from '/vite.svg'
 import FileUploader from '../FileUploader'
 
-import {    useCallback, useState  } from 'react'
+import { useCallback, useState  } from 'react'
 
 import { saveAs } from 'file-saver';
 
 import { Operations } from '../Global'
 import OperationSelector from '../OperationSelector'
 import { backend } from '@/config';
-
+import { Button } from '@/components/ui/button';
+import {signOut} from 'firebase/auth'
+import {auth} from '../config'
 interface HomeProps{
 
 }
@@ -28,7 +30,7 @@ function Home( {} : HomeProps) {
         }
   
         // Make a POST request using fetch
-        const response = await backend.fetch('api/analyze', {
+        const response = await backend.fetch('/analyze', {
           method: 'POST',
           body: formData,
           mode: "cors", // no-cors, *cors, same-origin
@@ -61,6 +63,9 @@ function Home( {} : HomeProps) {
   return (
 <>
       <div className='flex flex-row justify-content-between'>
+        <Button onClick={() =>signOut(auth)}>
+          Logout
+        </Button>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>

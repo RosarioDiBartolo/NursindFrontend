@@ -1,7 +1,7 @@
 
-import useSignIn from 'react-auth-kit/hooks/useSignIn';
-import { useNavigate } from "react-router-dom";
-
+import {  signInWithEmailAndPassword    } from 'firebase/auth';
+import {   useNavigate } from "react-router-dom";
+import {auth} from '../config'
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -20,45 +20,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useRef , useState} from 'react';
+import { useRef  } from 'react';
  
-import { backend } from '@/config';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 export function Login() {
-  const [State, setState] = useState("Immetti le tue credenziali per aver accesso alla piattaforma.")
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
-  const signIn = useSignIn();
   const navigate = useNavigate();
 
   const login = async ()=>{
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
+    
+    signInWithEmailAndPassword(auth, email || "", password || "")
+    navigate("/")
+  }
 
-    const response = await backend.fetch("/login",  {method: "POST", headers: {
-      'Content-Type': 'application/json',
-  },     body: JSON.stringify({ email, password  })});
+  const [user, loading, error] = useAuthState(auth);
+  loading;
+  if (user){
+    navigate("/")
 
-    if (response.status === 401){
-      setState("Invalid Credentials")
-      return
-    }
-    const data =  await response.json() 
-    console.log(data)
-    if (  signIn( data)){
-      setState("Succesfully logged in!")
-      navigate("/");
-
-    }
-
-  
   }
 
   return (
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>Accedi al tuo Account</CardTitle>
-        <CardDescription> {State}</CardDescription>
+        <CardDescription> { error ? "Credenziali invalide"  : "Immetti le tue credenziali per aver accesso alla piattaforma."  }</CardDescription>
       </CardHeader>
       <CardContent>
         <form>

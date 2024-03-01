@@ -1,3 +1,4 @@
 {
-    "backend-url": "https://nursindbackend.onrender.com/"
+    "render": "https://nursindbackend.onrender.com/",
+    "local": "http://127.0.0.1:8080/"
 }
