@@ -12,6 +12,7 @@ import { backend } from '@/config';
 import { Button } from '@/components/ui/button';
 import {signOut} from 'firebase/auth'
 import {auth} from '../config'
+import Tasks from '@/Tasks';
 interface HomeProps{
 
 }
@@ -95,6 +96,8 @@ function Home( {} : HomeProps) {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+
+      <Tasks />
     </>  )
 }
 
