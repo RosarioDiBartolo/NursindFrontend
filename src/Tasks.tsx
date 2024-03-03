@@ -1,77 +1,71 @@
 // Import necessary libraries
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableHead,
+  TableFooter,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import  LoadingSpinner  from './components/ui/LoadingSpinner';
+} from "@/components/ui/table";
+import FileUploader from "./FileUploader";
+import FileTask from "./FileTask";
+import { Group, GroupContext } from "./Group";
+import { CheckCheck, CheckIcon, CrossIcon, UserRoundX } from "lucide-react";
+import { Button } from "./components/ui/button";
 
-// Sample data for tasks
-const initialTasks = {
-  "s8dafE": {
-    filename: "file.pdf"
-  }
-}
+function Blockview(Block: object) {
+  const [BlockState, setBlockState] = useState<Group>({
+    Missing: Object.keys(Block).length,
+    Mattine: 0,
+    Pomeriggi: 0,
+    Notti: 0,
+    Nomi: [],
+  });
 
+  const stato = BlockState?.Missing != 0 ? "incompleto" : "Completato"  ;
 
-
-interface BasicTask {
-  
-  status: string;
-  filename: string;
-  Mattine: number;
-  Pomeriggi: number;
-  Notti: number;
-}
-
-interface Task extends BasicTask{
-  id: string;  
-}
-
-function Task({ id, status, filename, Mattine, Pomeriggi, Notti }: Task) {
   return (
+    <GroupContext.Provider value={{ BlockState, setBlockState }}>
+      <TableBody className="border-solid border-2 rounded-sm shadow-lg shadow-slate-400 ">
+        {Object.keys(Block).map((k) => (
+          <FileTask key={k} idx={k} file={Block[k]} />
+        ))}
+        <TableRow className="rounded-sm my-4">
+          <TableCell className=" flex justify-center gap-3 ">
+            Nomi congruenti
+            {new Set(BlockState?.Nomi).size > 1 ? (
+              <UserRoundX className="text-red-600" />
+            ) : (
+              <CheckCheck className="text-green-600" />
+            )}{" "}
+          </TableCell>
 
-    <TableRow>
-      <TableCell>{id}</TableCell>
-      <TableCell>{filename}</TableCell>
-      <TableCell className="font-medium">{status === "succes" ? "succes": <LoadingSpinner  className="text-gray"/> }</TableCell>
-      <TableCell>{Mattine}</TableCell>
-      <TableCell>{Pomeriggi}</TableCell>
-      <TableCell>{Notti}</TableCell>
-
-      <TableCell className="text-right">$250.00</TableCell>
-    </TableRow>)
+          <TableCell>
+              <Button  className='bg-green-700 text-white  focus:outline-none'>
+                Scarica i risultati
+              </Button>
+           </TableCell>
+          
+          <TableCell />
+          <TableCell>{BlockState?.Mattine}</TableCell>{" "}
+          <TableCell>{BlockState?.Pomeriggi}</TableCell>{" "}
+          <TableCell>{BlockState?.Notti}</TableCell>
+        </TableRow>
+      </TableBody>
+    </GroupContext.Provider>
+  );
 }
-
 
 // Main TasksPage component
 function Tasks() {
-  const [tasks, setTasks] = useState(initialTasks);
-
-  // Function to add a new task
-  const addTask = (id: string, task: Task) => {
-    setTasks({ ...tasks, id: task });
-  };
-
-  // Function to remove a task
-  const removeTask = (taskId: string) => {
-
-    delete tasks[taskId]
-
-    setTasks(tasks);
-  };
-
+  const [blocks, setBlocks] = useState<File[][]>([]);
   return (
-    <Table>
+    <Table >
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-
           <TableCell>id</TableCell>
           <TableCell>file</TableCell>
           <TableCell className="font-medium">stato</TableCell>
@@ -82,12 +76,23 @@ function Tasks() {
           <TableCell className="text-right">$250.00</TableCell>
         </TableRow>
       </TableHeader>
-      <TableBody>
-        {Object.entries(tasks).map(([k  , v ]) => <Task id = {k} {...v} key={k} /> ) }
-      </TableBody>
+      
+          
+      {blocks.map((block, idx) => (
+        <Blockview key={idx} {...block} />
+      ))}
+ 
+      <TableFooter className="flex justify-end w-[100%] my-6 ">
+        <FileUploader
+          callback={(files) => {
+            setBlocks([...blocks, [...files]]);
+          }}
+        >
+          Aggiungi analisi ...
+        </FileUploader>
+      </TableFooter>
     </Table>
-
   );
 }
 
-export default Tasks
+export default Tasks;

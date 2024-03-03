@@ -15,17 +15,19 @@ const FileUploader: React.FunctionComponent< Props  > = ( {children, callback} )
       fileInputRef.current.click();
     }
   };
-
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files;
-    if (selectedFiles && selectedFiles.length > 0) {
-      // Handle the selected files (in this case, assuming PDFs)
-      if (callback){
-        callback(selectedFiles)
-      } 
-      console.log('Selected files:', selectedFiles);
+    const selectedFiles =  event.target.files  ;
+    if (selectedFiles && selectedFiles.length > 0 && callback) {
+      callback(selectedFiles);
+   
+      // Reset the value of the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
+  
 
   return (
     <> 
