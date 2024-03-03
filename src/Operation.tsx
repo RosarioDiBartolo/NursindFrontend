@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import   {    useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,15 +16,12 @@ interface operation {
 }
 
 function Operation({ files }: operation) {
-  const [{loading, answer}, setState] = useState({
-    loading: true,
+  const [{loading, answer} ] = useState({
+    loading: true, 
     answer: null,
   });
 
-  const error = useMemo(
-    () => (loading ? answer : null),
-    [loading, answer]
-  );
+  
 
   return (
     <Card className="w-[350px]">

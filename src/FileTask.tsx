@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import   { useEffect, useState } from "react";
 import { backend } from "./config";
 import { CheckCheck, FileX2 } from "lucide-react";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
@@ -6,7 +6,7 @@ import LoadingSpinner from "./components/ui/LoadingSpinner";
 import { TableCell, TableRow } from "./components/ui/table";
 import {   useGroupData } from "./Group";
 
-interface FileTaskProps {file: File;   idx: string | number;
+interface FileTaskProps {file: File; 
 }
 
 type statusType = "success" | "loading" | "error";
@@ -26,16 +26,18 @@ const statusOptions = {
 
 }
 
-interface TaskResponse{Notti: number; Mattine: number; Pomeriggi: number; Nome : string}
+interface TaskResponse{Notti: number; Mattine: number; Pomeriggi: number; Nome : string; timeRequired: number}
 
-export function FileTask({ file, idx }: FileTaskProps) {
-  const { BlockState, setBlockState } = useGroupData();
+export function FileTask({ file  }: FileTaskProps) {
+  const {   setBlockState } = useGroupData();
 
   const [status, setStatus] = useState<{type: statusType; message: string } >({type: "loading", message: ""})
   const [res, setRes] = useState<TaskResponse>(   );
 
   useEffect(() => {
     const fetchData = async () => {
+      const startTime = new Date().getTime();
+
       const formData = new FormData();
       formData.append("file", file);
   
@@ -47,7 +49,11 @@ export function FileTask({ file, idx }: FileTaskProps) {
           cache: "no-cache",
           credentials: "same-origin",
         });
-  
+
+        const endTime = new Date().getTime();
+
+      // Calculate the time taken in milliseconds
+        const timeRequired = endTime - startTime;
         const data: TaskResponse = await response.json();
         console.log(data);
   
@@ -60,7 +66,7 @@ export function FileTask({ file, idx }: FileTaskProps) {
           Notti: prev.Notti + data.Notti,
         }));
   
-        setRes(data);
+        setRes({...data, timeRequired  });
   
         setStatus({
           type: "success",
@@ -70,7 +76,7 @@ export function FileTask({ file, idx }: FileTaskProps) {
         console.error("Error fetching data:", error);
         setStatus({
           type: "error",
-          message: error.message || "An error occurred",
+          message: (error as {message: string} ).message || "An error occurred",
         });
       }
     };
@@ -81,13 +87,13 @@ export function FileTask({ file, idx }: FileTaskProps) {
   return (
     <>
       <TableRow   className="border-none">
-        <TableCell>{idx}</TableCell>
+        <TableCell>{res?.Nome}</TableCell>
         <TableCell>{file.name}</TableCell>
         <TableCell className="font-medium">{statusOptions[status.type]}</TableCell>
         <TableCell>{res?.Mattine}</TableCell>
         <TableCell>{res?.Pomeriggi}</TableCell>
         <TableCell>{res?.Notti}</TableCell>
-        <TableCell className="text-right">$250.00</TableCell>
+        <TableCell className="text-right">{res?.timeRequired}</TableCell>
       </TableRow>
     </>
   );

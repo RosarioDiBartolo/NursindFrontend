@@ -1,18 +1,18 @@
-// Updated ProtectedRoute.js
 import React, { useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useNavigate, Route } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { auth } from './config';
 
-interface props{
-
+interface Props {
+  Comp: React.ComponentType;
 }
-function ProtectedRoute({Comp}){
-  const [user, loading, error] = useAuthState(auth);
+
+function ProtectedRoute({ Comp }: Props) {
+  const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to login page if the user is not authenticated
+    // Redirect to the login page if the user is not authenticated
     if (loading === false && user === null) {
       navigate('/login');
     }
@@ -23,7 +23,7 @@ function ProtectedRoute({Comp}){
     return null;
   }
 
-  return (<Comp   />);
-};
+  return <Comp />;
+}
 
 export default ProtectedRoute;

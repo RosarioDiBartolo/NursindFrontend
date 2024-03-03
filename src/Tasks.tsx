@@ -1,21 +1,22 @@
 // Import necessary libraries
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
-  TableHeader,
+   TableFooter,
+   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import FileUploader from "./FileUploader";
 import FileTask from "./FileTask";
 import { Group, GroupContext } from "./Group";
-import { CheckCheck, CheckIcon, CrossIcon, UserRoundX } from "lucide-react";
+import { CheckCheck, UserRoundX } from "lucide-react";
 import { Button } from "./components/ui/button";
+ 
 
-function Blockview(Block: object) {
+function Block(Block: File[]) {
   const [BlockState, setBlockState] = useState<Group>({
     Missing: Object.keys(Block).length,
     Mattine: 0,
@@ -23,38 +24,54 @@ function Blockview(Block: object) {
     Notti: 0,
     Nomi: [],
   });
-
-  const stato = BlockState?.Missing != 0 ? "incompleto" : "Completato"  ;
-
   return (
     <GroupContext.Provider value={{ BlockState, setBlockState }}>
-      <TableBody className="border-solid border-2 rounded-sm shadow-lg shadow-slate-400 ">
-        {Object.keys(Block).map((k) => (
-          <FileTask key={k} idx={k} file={Block[k]} />
-        ))}
-        <TableRow className="rounded-sm my-4">
-          <TableCell className=" flex justify-center gap-3 ">
-            Nomi congruenti
-            {new Set(BlockState?.Nomi).size > 1 ? (
-              <UserRoundX className="text-red-600" />
-            ) : (
-              <CheckCheck className="text-green-600" />
-            )}{" "}
-          </TableCell>
 
-          <TableCell>
-              <Button  className='bg-green-700 text-white  focus:outline-none'>
-                Scarica i risultati
-              </Button>
-           </TableCell>
-          
-          <TableCell />
-          <TableCell>{BlockState?.Mattine}</TableCell>{" "}
-          <TableCell>{BlockState?.Pomeriggi}</TableCell>{" "}
-          <TableCell>{BlockState?.Notti}</TableCell>
+    <Table>
+      <TableCaption>A list of your recent invoices.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableCell>Nome</TableCell>
+          <TableCell>file</TableCell>
+          <TableCell className="font-medium">stato</TableCell>
+          <TableCell>Mattine</TableCell>
+          <TableCell>Pomeriggi</TableCell>
+          <TableCell>Notti</TableCell>
+          <TableCell>Tempo richiesto</TableCell>
+
         </TableRow>
-      </TableBody>
+      </TableHeader>
+
+      <TableBody className="border-solid border-2 rounded-sm shadow-lg shadow-slate-400 ">
+      {Object.entries(Block).map(([k, v]) => (
+        <FileTask key={k} file={v} />
+      ))}      </TableBody>
+      <TableFooter> 
+      <TableRow className="rounded-sm my-4">
+         <TableCell className=" flex justify-center gap-3 ">
+          Nomi congruenti
+          {new Set(BlockState?.Nomi).size > 1 ? (
+            <UserRoundX className="text-red-600" />
+          ) : (
+            <CheckCheck className="text-green-600" />
+          )}{" "}
+        </TableCell>
+        <TableCell>
+          <Button className="bg-green-700 text-white  focus:outline-none">
+            Scarica i risultati
+          </Button>
+        </TableCell>
+        <TableCell />
+        <TableCell>{BlockState?.Mattine}</TableCell>{" "}
+        <TableCell>{BlockState?.Pomeriggi}</TableCell>{" "}
+        <TableCell>{BlockState?.Notti}</TableCell>
+        <TableCell />
+
+      </TableRow>
+      </TableFooter>
+    </Table>
     </GroupContext.Provider>
+
   );
 }
 
@@ -62,27 +79,11 @@ function Blockview(Block: object) {
 function Tasks() {
   const [blocks, setBlocks] = useState<File[][]>([]);
   return (
-    <Table >
-      <TableCaption>A list of your recent invoices.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableCell>id</TableCell>
-          <TableCell>file</TableCell>
-          <TableCell className="font-medium">stato</TableCell>
-          <TableCell>Mattine</TableCell>
-          <TableCell>Pomeriggi</TableCell>
-          <TableCell>Notti</TableCell>
-
-          <TableCell className="text-right">$250.00</TableCell>
-        </TableRow>
-      </TableHeader>
-      
-          
+    <div className="flex flex-col">
       {blocks.map((block, idx) => (
-        <Blockview key={idx} {...block} />
+        <Block key={idx} {...block} />
       ))}
- 
-      <TableFooter className="flex justify-end w-[100%] my-6 ">
+      <footer className="flex justify-end w-[100%] my-6 ">
         <FileUploader
           callback={(files) => {
             setBlocks([...blocks, [...files]]);
@@ -90,8 +91,8 @@ function Tasks() {
         >
           Aggiungi analisi ...
         </FileUploader>
-      </TableFooter>
-    </Table>
+      </footer>
+    </div>
   );
 }
 

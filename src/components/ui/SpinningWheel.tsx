@@ -1,4 +1,3 @@
-import React from "react";
 import { cn } from "@/lib/utils"; // Assuming you have a utility function for classnames
 
 const SpinningWheel = ({ size = 50, color = "currentColor", className = "" }   ) => {
