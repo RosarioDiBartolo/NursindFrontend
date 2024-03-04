@@ -87,8 +87,8 @@ export function FileTask({ file  }: FileTaskProps) {
   return (
     <>
       <TableRow   className="border-none">
-        <TableCell>{res?.Nome}</TableCell>
-        <TableCell>{file.name}</TableCell>
+        <TableCell className="text-ellipsis whitespace-nowrap overflow-hidden">{res?.Nome}</TableCell>
+        <TableCell className='text-ellipsis whitespace-nowrap overflow-hidden'>{file.name}</TableCell>
         <TableCell className="font-medium">{statusOptions[status.type]}</TableCell>
         <TableCell>{res?.Mattine}</TableCell>
         <TableCell>{res?.Pomeriggi}</TableCell>

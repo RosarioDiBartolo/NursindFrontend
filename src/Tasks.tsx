@@ -5,8 +5,8 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-   TableFooter,
-   TableHeader,
+  TableFooter,
+  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import FileUploader from "./FileUploader";
@@ -14,7 +14,7 @@ import FileTask from "./FileTask";
 import { Group, GroupContext } from "./Group";
 import { CheckCheck, UserRoundX } from "lucide-react";
 import { Button } from "./components/ui/button";
- 
+import { saveAs } from "file-saver";
 
 function Block(Block: File[]) {
   const [BlockState, setBlockState] = useState<Group>({
@@ -26,52 +26,64 @@ function Block(Block: File[]) {
   });
   return (
     <GroupContext.Provider value={{ BlockState, setBlockState }}>
+      <Table className='bg-muted'>
+        <TableCaption>A list of your recent invoices.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableCell>Nome</TableCell>
+            <TableCell>file</TableCell>
+            <TableCell className="font-medium">stato</TableCell>
+            <TableCell>Mattine</TableCell>
+            <TableCell>Pomeriggi</TableCell>
+            <TableCell>Notti</TableCell>
+            <TableCell>Tempo richiesto</TableCell>
+          </TableRow>
+        </TableHeader>
 
-    <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableCell>Nome</TableCell>
-          <TableCell>file</TableCell>
-          <TableCell className="font-medium">stato</TableCell>
-          <TableCell>Mattine</TableCell>
-          <TableCell>Pomeriggi</TableCell>
-          <TableCell>Notti</TableCell>
-          <TableCell>Tempo richiesto</TableCell>
+        <TableBody className=" bg-gradient-to-t from-slate-300 rounded-sm  shadow-slate-400 ">
+          {Object.entries(Block).map(([k, v]) => (
+            <FileTask key={k} file={v} />
+          ))}{" "}
+        </TableBody>
+        <TableFooter>
+          <TableRow className="rounded-sm my-4  ">
+            <TableCell className=" flex justify-center gap-3 ">
+              {new Set(BlockState?.Nomi).size > 1 ? (
+                <span>
+                  <span>Nomi icongruenti...</span>{" "}
+                  <UserRoundX className="text-red-600" />{" "}
+                </span>
+              ) : (
+                <span>
+                  <span>
+                  Nomi congruenti
+                    </span>   <CheckCheck className="text-green-600" />{" "}
+                </span>
+              )}{" "}
+            </TableCell>
+            <TableCell>
+              <Button
+                onClick={() => {
+                  const nome = BlockState.Nomi[0];
+                  const content = `${nome}\nMattine:  ${BlockState.Mattine}\nPomeriggi:  ${BlockState.Pomeriggi}\nNotti:  ${BlockState.Notti}`;
 
-        </TableRow>
-      </TableHeader>
-
-      <TableBody className="border-solid border-2 rounded-sm shadow-lg shadow-slate-400 ">
-      {Object.entries(Block).map(([k, v]) => (
-        <FileTask key={k} file={v} />
-      ))}      </TableBody>
-      <TableFooter> 
-      <TableRow className="rounded-sm my-4">
-         <TableCell className=" flex justify-center gap-3 ">
-          Nomi congruenti
-          {new Set(BlockState?.Nomi).size > 1 ? (
-            <UserRoundX className="text-red-600" />
-          ) : (
-            <CheckCheck className="text-green-600" />
-          )}{" "}
-        </TableCell>
-        <TableCell>
-          <Button className="bg-green-700 text-white  focus:outline-none">
-            Scarica i risultati
-          </Button>
-        </TableCell>
-        <TableCell />
-        <TableCell>{BlockState?.Mattine}</TableCell>{" "}
-        <TableCell>{BlockState?.Pomeriggi}</TableCell>{" "}
-        <TableCell>{BlockState?.Notti}</TableCell>
-        <TableCell />
-
-      </TableRow>
-      </TableFooter>
-    </Table>
+                  const blob = new Blob([content], { type: "text/plain" });
+                  saveAs(blob, `${nome}.txt`);
+                }}
+                className="bg-green-700 text-white  focus:outline-none"
+              >
+                Scarica i risultati
+              </Button>
+            </TableCell>
+            <TableCell />
+            <TableCell>{BlockState?.Mattine}</TableCell>{" "}
+            <TableCell>{BlockState?.Pomeriggi}</TableCell>{" "}
+            <TableCell>{BlockState?.Notti}</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableFooter>
+      </Table>
     </GroupContext.Provider>
-
   );
 }
 
@@ -79,10 +91,16 @@ function Block(Block: File[]) {
 function Tasks() {
   const [blocks, setBlocks] = useState<File[][]>([]);
   return (
-    <div className="flex flex-col">
-      {blocks.map((block, idx) => (
+    <div className="flex flex-col w-full">
+      {blocks.length > 0 ? (blocks.map((block, idx) => (
         <Block key={idx} {...block} />
-      ))}
+      ))):   (
+      <h3 className='text-slate-600 rounded-sm p-6 text-opacity-90 '>
+      Comincia l'analisi dei pdf di dipendenti di diverse aziende nell'ambito sanitario: <code>Azienda Pisa</code> 
+    </h3>
+    )
+      
+}
       <footer className="flex justify-end w-[100%] my-6 ">
         <FileUploader
           callback={(files) => {
