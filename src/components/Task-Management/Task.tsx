@@ -1,9 +1,9 @@
 import   { useEffect, useState } from "react";
-import { backend } from "./config";
+import { backend } from "../../config";
 import { CheckCheck, FileX2 } from "lucide-react";
-import LoadingSpinner from "./components/ui/LoadingSpinner";
+import LoadingSpinner from "../ui/LoadingSpinner";
 
-import { TableCell, TableRow } from "./components/ui/table";
+import { TableCell, TableRow } from "../ui/table";
 import {   useGroupData } from "./Group";
 
 interface FileTaskProps {file: File; 
@@ -28,7 +28,7 @@ const statusOptions = {
 
 interface TaskResponse{Notti: number; Mattine: number; Pomeriggi: number; Nome : string; timeRequired: number}
 
-export function FileTask({ file  }: FileTaskProps) {
+export function Task({ file  }: FileTaskProps) {
   const {   setBlockState } = useGroupData();
 
   const [status, setStatus] = useState<{type: statusType; message: string } >({type: "loading", message: ""})
@@ -99,4 +99,4 @@ export function FileTask({ file  }: FileTaskProps) {
   );
 }
 
-export default FileTask;
+export default Task;

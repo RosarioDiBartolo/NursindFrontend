@@ -9,11 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import FileUploader from "./FileUploader";
-import FileTask from "./FileTask";
-import { Group, GroupContext } from "./Group";
+import FileUploader from "../FileUploader";
+import Task from "../components/Task-Management/Task";
+import { Group, GroupContext } from "../components/Task-Management/Group";
 import { CheckCheck, UserRoundX } from "lucide-react";
-import { Button } from "./components/ui/button";
+import { Button } from "../components/ui/button";
 import { saveAs } from "file-saver";
 
 function Block(Block: File[]) {
@@ -42,8 +42,8 @@ function Block(Block: File[]) {
 
         <TableBody className=" bg-gradient-to-t from-slate-300 rounded-sm  shadow-slate-400 ">
           {Object.entries(Block).map(([k, v]) => (
-            <FileTask key={k} file={v} />
-          ))}{" "}
+            <Task key={k} file={v} />
+          ))} 
         </TableBody>
         <TableFooter>
           <TableRow className="rounded-sm my-4  ">
