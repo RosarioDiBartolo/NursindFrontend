@@ -1,5 +1,5 @@
 // Import necessary libraries
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -29,8 +29,18 @@ interface AnalysisData {
   Values: YearData;
 }
 
+
+interface RowProps<T>{
+  objects: T[],
+  className?: string;
+  props?: React.HTMLAttributes<HTMLTableRowElement> & React.RefAttributes<HTMLTableRowElement>
+}
+function Row<T>(  {objects, className, props}: RowProps<T> ){
+  return (<TableRow   className={className} {...props} >{objects.map ( c =>  <TableCell>{c as ReactNode }</TableCell>  )}</TableRow>)
+}
+
 function Block(Block: File[]) {
-  const [BlockState, setBlockState] = useState<AnalysisData>({Nome: "Vff", Values: {2019: { Pomeriggio: 199 , Mattina: 10, Notte: 239} }});
+  const [BlockState, setBlockState] = useState<AnalysisData>({Nome: "Vff", Values: { 2019: { Pomeriggio: 199 , Mattina: 10, Notte: 239}, 2020: { Pomeriggio: 199 , Mattina: 10, Notte: 239}, 2021: { Pomeriggio: 199 , Mattina: 10, Notte: 239} },  });
   const [Status, setStatus] = useState<AuthStatusInfo>({
     type: "loading",
     message: "",
@@ -63,17 +73,11 @@ function Block(Block: File[]) {
   }, []);
 
   return (
-    <div className="m-3 border-b-0 shadow-lg shadow-slate-400  border-muted border-2">
+    <div className="m-3   border-b-0 shadow-lg shadow-slate-400  border-muted border-2">
       <Table className="bg-muted">
-        <TableCaption>Lista delle precedenti richieste.</TableCaption>
+         
         <TableHeader>
-          <TableRow>
-            <TableCell>Nome</TableCell> <TableCell>Size</TableCell>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody className=" bg-gradient-to-t from-slate-300 rounded-sm  shadow-slate-400 ">
-          {Object.entries(Block).map(([k, v]) => (
+        {Object.entries(Block).map(([k, v]) => (
             <TableRow key={k} className="border-none">
               <TableCell className="text-ellipsis whitespace-nowrap overflow-hidden">
                 {v.name}
@@ -81,11 +85,17 @@ function Block(Block: File[]) {
               <TableCell>{v.size} bytes</TableCell>
             </TableRow>
           ))}
-        </TableBody>
-        <TableFooter>
-          {Object.entries(BlockState?.Values).map( ([k,v] )=>(<div className="border bg-slate-600 text-white"><span>{k}</span>   <span>{v.Pomeriggio}</span> <span>{v.Mattina}</span> </div> ) )} 
+        </TableHeader>
+
+        <TableBody className=" bg-gradient-to-t from-slate-300 rounded-sm  shadow-slate-400 ">
          
-        </TableFooter>
+          {Object.entries(BlockState?.Values).map( ([year, values]) => (
+            <Row  objects= {[year,  ...Object.values(values) ]} className="border bg-slate-600 text-white" />
+          )                
+
+        )}
+         </TableBody> 
+          
       </Table>
       <div className="flex justify-end w-full p-6 ">
         {Status.type === "success" ? (
@@ -108,7 +118,7 @@ function Block(Block: File[]) {
         ) : (
           <LoadingSpinner />
         )}
-      </div>
+      </div>       
     </div>
   );
 }
