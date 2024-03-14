@@ -1,7 +1,7 @@
-import { Api } from './Utils.ts'
+import { Api } from "./lib/utils.ts";
 import config from './app.config.json'
 
-export const backend = new Api(config['render']);
+export const backend = new Api(config['local']);
 
 
 // Import the functions you need from the SDKs you need
