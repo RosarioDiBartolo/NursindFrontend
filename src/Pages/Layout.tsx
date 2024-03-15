@@ -10,7 +10,7 @@ import {auth} from '../config'
  
 export default function Layout() {
   return (
-<div className='border w-full flex flex-col items-center justify-center p-6 rounded-lg bg-slate-300 shadow-xl shadow-slate-400 resize-x overflow-auto '>
+<div className='border w-160 flex flex-col items-center justify-center p-6 rounded-lg bg-slate-300 shadow-xl shadow-slate-400 resize-x overflow-auto '>
       <div className='flex w-full  align-middle justify-between'>
         <div className='flex gap-6'>
         <a href="https://vitejs.dev" target="_blank">

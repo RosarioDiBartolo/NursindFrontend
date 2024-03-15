@@ -1,12 +1,12 @@
 // Import necessary libraries
-import { ReactNode, useEffect, useState } from "react";
+import {   useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHeader,
+   TableCaption,
+   TableCell,
+   TableHead,
+   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import FileUploader from "../FileUploader";
@@ -15,7 +15,7 @@ import { saveAs } from "file-saver";
 import { backend } from "@/config";
 import { AuthStatusInfo } from "@/lib/AuthStatus";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
+import {XIcon } from "lucide-react";
 type YearData = {
   [year: number]: {
     Notte: number;
@@ -30,17 +30,11 @@ interface AnalysisData {
 }
 
 
-interface RowProps<T>{
-  objects: T[],
-  className?: string;
-  props?: React.HTMLAttributes<HTMLTableRowElement> & React.RefAttributes<HTMLTableRowElement>
-}
-function Row<T>(  {objects, className, props}: RowProps<T> ){
-  return (<TableRow   className={className} {...props} >{objects.map ( c =>  <TableCell>{c as ReactNode }</TableCell>  )}</TableRow>)
-}
+  
 
-function Block(Block: File[]) {
-  const [BlockState, setBlockState] = useState<AnalysisData>({Nome: "Vff", Values: { 2019: { Pomeriggio: 199 , Mattina: 10, Notte: 239}, 2020: { Pomeriggio: 199 , Mattina: 10, Notte: 239}, 2021: { Pomeriggio: 199 , Mattina: 10, Notte: 239} },  });
+ 
+function Block({Block}: {Block: File}  ) {
+  const [BlockState, setBlockState] = useState<AnalysisData>({Nome: "", Values: {} }  );
   const [Status, setStatus] = useState<AuthStatusInfo>({
     type: "loading",
     message: "",
@@ -51,9 +45,9 @@ function Block(Block: File[]) {
   useEffect(() => {
     const analyze = async () => {
       const formData = new FormData();
-      console.log("Analyze");
+      console.log("Waiting for a response...");
 
-      Object.values(Block).forEach((file) => formData.append(file.name, file));
+      formData.append(Block.name, Block)
 
       return await backend.path("/analyze").post(formData, {
         headers: {
@@ -65,40 +59,59 @@ function Block(Block: File[]) {
 
     analyze()
       .then((response) => {
+        console.log("Request finished");
+
         setBlockState(response.data as AnalysisData);
+        setStatus({type: "success", message: "Operazione avvenuta con successo"})
       })
       .catch((error) => {
         setStatus({ type: "error", message: error as string });
       });
   }, []);
 
+    const Totale = useMemo(() => {
+
+      let Mattine = 0
+      let Pomeriggi = 0;
+      let Notti = 0;
+
+      Object.values(BlockState.Values).forEach( Year => {
+        Mattine += Year.Mattina;
+        Pomeriggi += Year.Pomeriggio;
+        Notti += Year.Notte;
+      }  )
+        
+      return {Mattine, Pomeriggi, Notti}
+
+    }, [BlockState]) 
+
+   
+
   return (
-    <div className="m-3   border-b-0 shadow-lg shadow-slate-400  border-muted border-2">
-      <Table className="bg-muted">
-         
-        <TableHeader>
-        {Object.entries(Block).map(([k, v]) => (
-            <TableRow key={k} className="border-none">
-              <TableCell className="text-ellipsis whitespace-nowrap overflow-hidden">
-                {v.name}
-              </TableCell>
-              <TableCell>{v.size} bytes</TableCell>
-            </TableRow>
-          ))}
-        </TableHeader>
+    <div className="m-3 overflow-hidden bg-slate-600 border-b-0 shadow-lg shadow-slate-400  text-white border-muted border-2">
+      <Table className="overflow-hidden"> 
+      <TableCaption className='text-nowrap py-5 hover:text-white'>Conteggi di timbrature (entrata e uscita) per <span className='text-yellow-500'> {BlockState.Nome || Block.name } </span> 
+      </TableCaption>
+      <TableHeader  className='bg-slate-500   w-full'>
+        <TableRow  >
+        <TableHead className="text-white  text-center ">Anno</TableHead>  <TableHead  className="text-white  text-center ">Mattine</TableHead> <TableHead  className="text-white  text-center ">Pomeriggi</TableHead > <TableHead  className="text-white  text-center ">Notti</TableHead>
+          </TableRow>
+       </TableHeader>
 
-        <TableBody className=" bg-gradient-to-t from-slate-300 rounded-sm  shadow-slate-400 ">
-         
-          {Object.entries(BlockState?.Values).map( ([year, values]) => (
-            <Row  objects= {[year,  ...Object.values(values) ]} className="border bg-slate-600 text-white" />
-          )                
-
-        )}
+        <TableBody className="overflow-hidden bg-gradient-to-t from-slate-300 rounded-sm  shadow-slate-400 ">
+  
+            {Object.entries(BlockState?.Values).map( ([year, values]) => (
+              <TableRow className="border bg-slate-600 marker:" ><TableCell>{year}</TableCell> <TableCell>{values.Mattina}</TableCell><TableCell>{values.Pomeriggio}</TableCell><TableCell>{values.Notte}</TableCell> </TableRow>
+           )                
+         )}
          </TableBody> 
           
       </Table>
-      <div className="flex justify-end w-full p-6 ">
-        {Status.type === "success" ? (
+      <div className="flex items-center px-3 justify-between w-full bg-slate-800 text-white">
+        <div className="flex">
+          <TableCell> Totale:</TableCell>  { Object.entries(Totale).map(([k, v]) =>  <TableCell key={k} >{k}: {v} </TableCell>   )  }
+         </div>
+         {Status.type === "success" ? (
           <Button
             onClick={() => {
               const nome = BlockState?.Nome;
@@ -115,9 +128,9 @@ function Block(Block: File[]) {
           >
             Scarica i risultati
           </Button>
-        ) : (
+        ) : Status.type == "loading"? (
           <LoadingSpinner />
-        )}
+        ):  (<span className="flex">Errore nel processare i dati...     <XIcon className='text-red-700' />  </span>)}
       </div>       
     </div>
   );
@@ -125,12 +138,12 @@ function Block(Block: File[]) {
 
 // Main TasksPage component
 function Tasks() {
-  const [blocks, setBlocks] = useState<File[][]>([]);
+  const [blocks, setBlocks] = useState<File[]>([]);
   console.log(blocks);
   return (
     <div className="flex flex-col w-full">
       {blocks.length > 0 ? (
-        blocks.map((block, idx) => <Block key={idx} {...block} />)
+        blocks.map((block, idx) => <Block  key={idx}  Block =  {block }    />)
       ) : (
         <h3 className="text-slate-600 rounded-sm p-6 text-opacity-90 ">
           Comincia l'analisi dei pdf di dipendenti di diverse aziende
@@ -139,8 +152,8 @@ function Tasks() {
       )}
       <footer className="flex justify-end w-[100%] my-6 ">
         <FileUploader
-          callback={(files) => {
-            setBlocks([...blocks, [...files]]);
+          callback={(file) => {
+            setBlocks([...blocks,  file  ] );
           }}
         >
           Aggiungi analisi ...

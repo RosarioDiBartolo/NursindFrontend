@@ -4,7 +4,7 @@ import { Button } from './components/ui/button';
 
 interface Props{
     children: React.ReactNode;
-    callback?: ( files: FileList ) => void ;
+    callback?: ( files: File ) => void ;
 }
 
 const FileUploader: React.FunctionComponent< Props  > = ( {children, callback} ) => {
@@ -18,9 +18,14 @@ const FileUploader: React.FunctionComponent< Props  > = ( {children, callback} )
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles =  event.target.files  ;
-    if (selectedFiles && selectedFiles.length > 0 && callback) {
-      callback(selectedFiles);
-   
+
+    if (selectedFiles ) {
+      const file = selectedFiles.item(0);
+      
+      if (file && callback){
+        callback(  file   );
+       }
+    
       // Reset the value of the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -38,8 +43,7 @@ const FileUploader: React.FunctionComponent< Props  > = ( {children, callback} )
         ref={fileInputRef}
         style={{ display: 'none' }}
         onChange={handleFileChange}
-        multiple
-      />
+       />
       </>
   );
 };

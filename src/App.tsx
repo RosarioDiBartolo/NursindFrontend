@@ -10,8 +10,7 @@ import ProtectedRoute from './ProtectedRoute';
 import BustePaga from './Pages/BustePaga';
 import Layout from './Pages/Layout';
 import Tasks from './Pages/Tasks';
-import Dashboard from './Pages/Dashboard';
- 
+  
 function App() {
   
 
@@ -29,8 +28,7 @@ function App() {
           <Route path="/buste-paga" element={ <BustePaga   />} />
 
         </Route>
-        <Route path="/dashboard" element={ <Dashboard />} />
-
+ 
         <Route path="/login" element={ <Login />} />
        
   
