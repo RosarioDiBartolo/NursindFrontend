@@ -24,9 +24,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 type value = {
-  Notte: number;
-  Mattina: number;
-  Pomeriggio: number;
+  Notte?: number;
+  Mattina?: number;
+  Pomeriggio?: number;
 };
 
 type YearData = {
@@ -57,9 +57,9 @@ function Year({ year, values, Delete }: yearRowProps) {
   return (
     <TableRow className="border   marker:">
       <TableCell className="p-2">{year}</TableCell>
-      <TableCell className="p-2">{values.Mattina}</TableCell>
-      <TableCell className="p-2">{values.Pomeriggio}</TableCell>
-      <TableCell className="p-2">{values.Notte}</TableCell>
+      <TableCell className="p-2">{values.Mattina || 0 }</TableCell>
+      <TableCell className="p-2">{values.Pomeriggio || 0}</TableCell>
+      <TableCell className="p-2">{values.Notte || 0}</TableCell>
       <TableCell className="p-2">
         <Button onClick={Delete}>Elimina</Button>
       </TableCell>
@@ -117,9 +117,9 @@ function Block({ Block }: { Block: File }) {
     let Notti = 0;
 
     Object.values(BlockState.Values).forEach((Year) => {
-      Mattine += Year.Mattina;
-      Pomeriggi += Year.Pomeriggio;
-      Notti += Year.Notte;
+      Mattine += Year.Mattina || 0;
+      Pomeriggi += Year.Pomeriggio || 0;
+      Notti += Year.Notte || 0;
     });
 
     return { Mattine, Pomeriggi, Notti };
