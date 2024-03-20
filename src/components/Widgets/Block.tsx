@@ -7,7 +7,7 @@ import {
   TableFooter,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
 import { saveAs } from "file-saver";
@@ -19,13 +19,9 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
-type value = {
-  Notte?: number;
-  Mattina?: number;
-  Pomeriggio?: number;
-};
+import { value, AnalysisStateInfo, AnalysisState, Year } from "./Year";
 
 type YearData = {
   [year: string]: value; // Specify the index signature type as 'string'
@@ -36,39 +32,8 @@ export interface AnalysisData {
   Values: YearData;
 }
 
-interface yearRowProps {
-  year: string;
-  values: value;
-  Delete: () => void;
-}
-
-type StateInfo<T> = {
-  message: string | object;
-  type: T;
-};
-
-export type AnalysisState = "default" | "loading" | "success" | "error";
-
-export type AnalysisStateInfo = StateInfo<AnalysisState>;
-
-export function Year({ year, values, Delete }: yearRowProps) {
-  return (
-    <TableRow className="border   marker:">
-      <TableCell className="p-2">{year}</TableCell>
-      <TableCell className="p-2">{values.Mattina || 0 }</TableCell>
-      <TableCell className="p-2">{values.Pomeriggio || 0}</TableCell>
-      <TableCell className="p-2">{values.Notte || 0}</TableCell>
-      <TableCell className="p-2">
-        <Button onClick={Delete}>Elimina</Button>
-      </TableCell>
-    </TableRow>
-  );
-}
-
-
-
-export type Azienda = undefined | "policlinico" | "pisa"
-function Block({ Block }: { Block: File; }) {
+export type Azienda = undefined | "policlinico" | "pisa";
+function Block({ Block }: { Block: File }) {
   const [Azienda, setAzienda] = useState<Azienda>();
 
   const [BlockState, setBlockState] = useState<AnalysisData>({
@@ -91,13 +56,13 @@ function Block({ Block }: { Block: File; }) {
           credentials: "same-origin",
         },
       });
- 
+
       setStatus((prev) => ({ ...prev, type: "loading" }));
 
       console.log("Waiting for a response...");
 
-
-      response.then((response) => {
+      response
+        .then((response) => {
           console.log("Request finished");
 
           setBlockState(response.data as AnalysisData);
@@ -105,29 +70,32 @@ function Block({ Block }: { Block: File; }) {
             type: "success",
             message: "Operazione avvenuta con successo",
           });
-        }).catch((error) => {
+        })
+        .catch((error) => {
           setStatus({ type: "error", message: error as string });
         });
     }
-
-
-
   };
 
   console.log(Status);
 
   const Totale = useMemo(() => {
-    let Mattine = 0;
-    let Pomeriggi = 0;
-    let Notti = 0;
+    const Tot: value = {
+      Pomeriggio: 0,
+      Mattina: 0,
+      Notte: 0,
+      DomenicheMattina: 0,
+    };
 
-    Object.values(BlockState.Values).forEach((Year) => {
-      Mattine += Year.Mattina || 0;
-      Pomeriggi += Year.Pomeriggio || 0;
-      Notti += Year.Notte || 0;
+    Object.values(BlockState.Values).forEach((values) => {
+      Tot.Pomeriggio = Tot.Pomeriggio || 0 + (values.Pomeriggio || 0);
+      Tot.Mattina = Tot.Mattina || 0 + (values.Mattina || 0);
+      Tot.Notte = Tot.Notte || 0 + (values.Notte || 0);
+      Tot.DomenicheMattina =
+        Tot.DomenicheMattina || 0 + (values.DomenicheMattina || 0);
     });
 
-    return { Mattine, Pomeriggi, Notti };
+    return Tot;
   }, [BlockState]);
 
   const ConversionTable: Record<AnalysisState, React.ReactNode> = {
@@ -166,9 +134,12 @@ function Block({ Block }: { Block: File; }) {
             <TableHead className="text-white  text-center ">Anno</TableHead>
             <TableHead className="text-white  text-center ">Mattine</TableHead>
             <TableHead className="text-white  text-center ">
-              Pomeriggi{" "}
+              Pomeriggi
             </TableHead>
             <TableHead className="text-white  text-center ">Notti</TableHead>
+            <TableHead className="text-white  text-center ">
+              Domeniche Mattina
+            </TableHead>
             <TableHead className="text-white  text-center ">Azione</TableHead>
           </TableRow>
         </TableHeader>
@@ -186,16 +157,23 @@ function Block({ Block }: { Block: File; }) {
                   delete newValues[year];
                   return { ...prev, Values: newValues };
                 });
-              }} />
+              }}
+            />
           ))}
           <TableRow>
-            <TableCell colSpan={1}>Totale:</TableCell>
-            {Object.entries(Totale).map(([k, v]) => (
-              <TableCell className=" " key={k}>
-                {k}: {v}
-              </TableCell>
-            ))}
-            <TableCell>{ConversionTable[Status.type]}</TableCell>
+            <TableCell className="text-center">Totale:</TableCell>
+            <TableCell className="text-center">
+              Mattine: {Totale.Mattina}
+            </TableCell>
+            <TableCell className="text-center">
+              Pomeriggi: {Totale.Pomeriggio}
+            </TableCell>
+            <TableCell className="text-center">Notti: {Totale.Notte}</TableCell>
+            <TableCell className="text-center">
+              Domeniche Mattina: {Totale.DomenicheMattina}
+            </TableCell>
+
+            <TableCell className="text-center" >{ConversionTable[Status.type]}</TableCell>
           </TableRow>
         </TableBody>
 
@@ -210,7 +188,7 @@ function Block({ Block }: { Block: File; }) {
               </Button>
             </TableCell>
 
-            <TableCell colSpan={3} className="">
+            <TableCell colSpan={4} className="">
               Conteggi di timbrature (entrata e uscita) per
               <span className="text-yellow-500 mx-1">
                 {BlockState.Nome || Block.name}
@@ -228,7 +206,6 @@ function Block({ Block }: { Block: File; }) {
               </Select>
             </TableCell>
           </TableRow>
-
         </TableFooter>
       </Table>
     </div>

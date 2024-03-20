@@ -1,29 +1,25 @@
-import { Button } from "../components/ui/button";
-import { UserRoundCheck } from "lucide-react";
+
 import Sidebar from "@/components/Widgets/Sidebar";
 import { Outlet } from "react-router-dom";
-
-import { signOut } from "firebase/auth";
-import { auth } from "../config";
+ 
 import Navbar from "@/components/Widgets/Navbar";
 
 export default function Layout() {
   return (
-    <div>
+    <div className='h-screen flex flex-col '>
     <Navbar/>
-    <div className="flex">
+    <div className="flex flex-1">
       <Sidebar />
-      <Button onClick={() => signOut(auth)}>
-        Logout <UserRoundCheck className="ml-5" />
-      </Button>
-
-      <h1 className="m-6">
-        <strong>Workers-Analyzer</strong>{" "}
+  
+      <div className="flex-1">
+      <h1 className="m-6 text-lg ">
+        <strong>Operazioni in corso...</strong>{" "}
       </h1>
-
-      <Outlet />
+       <Outlet />
+      </div>
+       
     </div>
     
-    </div>
+    </div >
   );
 }

@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
+import vitelogo from "/vite.svg"
+import { AiOutlineTeam } from "react-icons/ai";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,9 +13,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import { Link } from "react-router-dom"
- 
+} from "@/components/ui/navigation-menu";
+import { Link } from "react-router-dom";
+
 const components: { title: string; href: string; description: string }[] = [
   {
     title: "Alert Dialog",
@@ -50,39 +52,37 @@ const components: { title: string; href: string; description: string }[] = [
     description:
       "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
   },
-]
+];
 
 export default function Navbar() {
-  return ( 
-    <NavigationMenu className="border w-full h-fit justify-start p-2 bg-white">
+  return (
+    <NavigationMenu className="border w-full h-fit justify-between p-2 bg-white">
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Funzionalità principali</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <a
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    className="flex h-full w-full select-none flex-col  rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                     href="/"
                   >
-                     
-                    <div className="mb-2 mt-4 text-lg font-medium">
-                      shadcn/ui
+                    <div className="mb-2  text-lg font-medium">
+                      <AiOutlineTeam  className='text-2lg'/>
+                      <span className=' '> Estrazione dati timbrature</span>  
                     </div>
-                    <p className="text-sm leading-tight text-muted-foreground">
-                      Beautifully designed components that you can copy and
-                      paste into your apps. Accessible. Customizable. Open
-                      Source.
+                    <p className="mx-3 text-sm leading-tight text-muted-foreground">
+                      Estrai automaticamente i dati da fiel di tipo .pdf di diverse aziende d'ambito ospedaliero
                     </p>
                   </a>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
+              <ListItem href="/docs" title="Estrazione automatica delle buste paga.">
+              Questa Funzionalità non è ancora disponibile. Stiamo lavorando per renderla accessibile il prima possibile
               </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
+              <ListItem href="/docs/installation" title="Compilazione automatica di quiz e moduli">
+                Questa Funzionalità non è ancora disponibile. Stiamo lavorando per renderla accessibile il prima possibile
               </ListItem>
               <ListItem href="/docs/primitives/typography" title="Typography">
                 Styles for headings, paragraphs, lists...etc
@@ -107,15 +107,19 @@ export default function Navbar() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link to="/dashboard"   >
+          <Link to="/dashboard">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Dashboard
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
       </NavigationMenuList>
+       <h1 className='font-mono font-semibold flex gap-1 items-center'>
+        WorkersAnalyzer
+         <img src={vitelogo} className="" />  
+        </h1>
     </NavigationMenu>
-  )
+  );
 }
 
 const ListItem = React.forwardRef<
@@ -140,6 +144,6 @@ const ListItem = React.forwardRef<
         </a>
       </NavigationMenuLink>
     </li>
-  )
-})
-ListItem.displayName = "ListItem"
+  );
+});
+ListItem.displayName = "ListItem";

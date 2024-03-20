@@ -23,6 +23,7 @@ import {
 import { useRef  } from 'react';
  
 import { useAuthState } from 'react-firebase-hooks/auth';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export function Login() {
   const emailRef = useRef<HTMLInputElement>(null)
@@ -45,7 +46,8 @@ export function Login() {
   }
 
   return (
-    <Card className="w-[350px]">
+    <div className='h-screen flex justify-center items-center '>
+      {loading ? <LoadingSpinner /> : (<Card className="w-[350px]   ">
       <CardHeader>
         <CardTitle>Accedi al tuo Account</CardTitle>
         <CardDescription> { error ? "Credenziali invalide"  : "Immetti le tue credenziali per aver accesso alla piattaforma."  }</CardDescription>
@@ -81,7 +83,10 @@ export function Login() {
         <Button variant="outline">Cancel</Button>
         <Button onClick={login}>Accedi</Button>
       </CardFooter>
-    </Card>
+    </Card>) }
+     
+    
+    </div>
   )
 }
 

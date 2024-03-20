@@ -25,3 +25,8 @@ export class Api {
     return new Api(newPath);
   }
 }
+
+export type StateInfo<T> = {
+  message: string | object;
+  type: T;
+};
